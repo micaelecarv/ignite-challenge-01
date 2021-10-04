@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import '../styles/tasklist.scss'
+import '../styles/tasklist.scss';
 
-import { FiTrash, FiCheckSquare } from 'react-icons/fi'
+import { FiTrash, FiCheckSquare } from 'react-icons/fi';
+import { Key, ReactChild, ReactFragment, ReactPortal } from 'react';
 
 interface Task {
   id: number;
@@ -16,14 +17,33 @@ export function TaskList() {
 
   function handleCreateNewTask() {
     // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    if (!newTaskTitle) return;
+  
+    const newTask = {
+      id: Math.random(),
+      title: newTaskTitle,
+      isComplete: false
+    }
+
+    setTasks((oldState: any) => [...oldState, newTask]);
+    setNewTaskTitle('');
   }
 
   function handleToggleTaskCompletion(id: number) {
     // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    const newTasks = tasks.map((task: { id: number; isComplete: any; }) => task.id == id ? {
+      ...task, 
+      isComplete: !task.isComplete
+    } : task);
+
+    setTasks(newTasks)
   }
 
   function handleRemoveTask(id: number) {
     // Remova uma task da listagem pelo ID
+    const filteredTasks = tasks.filter((task: { id: number; }) => task.id != id);
+
+    setTasks(filteredTasks)
   }
 
   return (
@@ -46,7 +66,7 @@ export function TaskList() {
 
       <main>
         <ul>
-          {tasks.map(task => (
+          {tasks.map((task: { id: Key | null | undefined; isComplete: boolean | undefined; title: boolean | ReactChild | ReactFragment | ReactPortal | null | undefined; }) => (
             <li key={task.id}>
               <div className={task.isComplete ? 'completed' : ''} data-testid="task" >
                 <label className="checkbox-container">
